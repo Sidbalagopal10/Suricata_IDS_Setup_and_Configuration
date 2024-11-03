@@ -1,0 +1,99 @@
+Starting the Service:
+sudo systemctl start suricata.service
+
+Checking Service Status:
+sudo systemctl status suricata.service
+
+Configuration:
+
+1)Base Configuration:
+Location: /etc/suricata/suricata.yaml
+
+2)Network Configuration:
+yamlCopyvars:
+  address-groups:
+    HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
+    EXTERNAL_NET: "!$HOME_NET"
+
+3)Service Ports Configuration:
+yamlCopyport-groups:
+  HTTP_PORTS: "80"
+  SHELLCODE_PORTS: "180"
+  ORACLE_PORTS: 1521
+  SSH_PORTS: 22
+  DNP3_PORTS: 20000
+  MODBUS_PORTS: 502
+  FILE_DATA_PORTS: "[HTTP_PORTS,110,143]"
+
+Ruleset Management:
+
+1)Available Rulesets:
+
+et/open: Emerging Threats Open Ruleset (MIT Licensed)
+et/pro: Proofpoint's Commercial Ruleset
+etnetera/aggressive: IP blacklist
+malsilo/win-malware: Commodity malware rules
+oisf/trafficid: Suricata Traffic ID ruleset
+pawpatrules: IDPS/NSM rules
+scwx/enhanced: Secureworks enhanced ruleset (Commercial)
+scwx/malware: Secureworks malware ruleset (Commercial)
+
+2)Managing Rules:
+List available sources:
+sudo suricata-update list-sources
+
+Update source index:
+sudo suricata-update update-sources
+
+Enable a ruleset:
+sudo suricata-update enable-source et/open
+
+Update rules:
+sudo suricata-update
+
+Rule Statistics:
+Total rules loaded: 40,320
+IP-only rules: 1,241
+Packet payload inspection rules: 4,134
+Application layer inspection rules: 34,738
+Decoder event rules: 108
+
+Log Management:
+
+1)Log Locations:
+Primary log directory: /var/log/suricata/
+Fast alert log: fast.log
+EVE JSON log: eve.json
+Statistics log: stats.log
+
+Example Alert Format:
+log[**] [1:2100498:7] GPL ATTACK_RESPONSE id check returned root [**] [Classification: Potentially Bad Traffic] [Priority: 2] [TCP] 108.158.61.105:80 → 10.0.2.15:52148
+
+Security Considerations:
+
+1)Alert Monitoring:
+
+Monitor for specific high-priority alerts:
+
+Root access attempts (GPL ATTACK_RESPONSE)
+Suspicious package management traffic
+Unauthorized update activities
+
+2)Configuration Validation:
+
+Run configuration tests:
+sudo suricata -T -c /etc/suricata/suricata.yaml -v
+
+Maintenance:
+
+Directory Structure:
+/var/lib/suricata/
+├── rules/          # Rule files
+├── update/         # Update-related files
+└── suricata.yaml   # Main configuration
+
+Regular Tasks:
+1)Update rulesets regularly
+2)Monitor log files for suspicious activity
+3)Review and tune rules based on false positives
+3)Keep Suricata version updated
